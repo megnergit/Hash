@@ -19,12 +19,13 @@ in the optimal sequence.
 
 **Please note following mistakes we did**
 
-We picked up our data set from Kaggle -- the data science competition
-web site, because it is recommended in the lecture.  The problem is
+We picked up our data set from Kaggle, because it is recommended in the lecture.  
+The problem is
 that we picked up a question from the completion category (but not a
-prize competition again. Just to make sure), and we cannot share the
-code and the data privately.  The former is circumvented, because
-the sharing code is not allowed privately, but is okay publicly. When
+prize competition again, just to make sure), and we cannot share the
+code and the data privately (we noticed it today ;). The former is 
+circumvented, because
+sharing code is not allowed privately, but is okay publicly. When
 the notebook is published on the Kaggle website, we can share the code
 with you as well.  The notebook is running on the Kaggle at the
 moment, and as soon as it is ready, we will put it open there.
@@ -32,21 +33,21 @@ moment, and as soon as it is ready, we will put it open there.
 The second problem is hard to get around. The data set is for the
 'competition use' only. Unless you would also join in the competition,
 and download the data personally, you do not have an access to the
-data. But I think it is too much to ask for to reviewers. So, my code
+data. But I think it is too much to ask for the reviewers. So, my code
 would not run without the data. The only option I can think of is that
-I will give up 20 points of score that comes with the code. My hope is
-still there is a chance to pass the course, if I am lucky with other
-part. I put all the output of the code in my GitHub repo, including
-the intermediate products and the submission file, trying to give you
+I will give up 20 points of the score that comes with the code. My hope is
+there is still a chance to pass the course, if I am very lucky with other
+parts. I put all the output of the code in my GitHub repo, including
+the intermediate products and the submission file, in the effor to give you
 some proof that the code actually runs.
 
-One more thing: the problem described in the following sections is not
+One more thing: the data science problem described in the following sections is not
 a predictive type, such as we have training and test data set, and
-construct some fitting functions using training data. This is
-optimisation problem, and one of the variants of the traveling
+construct some fitting functions using training data. The present 
+question is an optimisation problem, and one of the variants of the traveling
 salesman problem. Here the distance, or score/penalty, to the next
 town is defined differently. Some machine learning technique is used,
-like clustering, but it is unsupervised learning, more toward the
+like clustering, but it is of an unsupervised learning, more toward the
 reinforcement learning where the program tries to maximise the
 reward. The description of the program looks different from those of
 supervised machine learning models such as MovieLens, and may appear
@@ -107,12 +108,10 @@ data set other than that. In the very first line, the total number
 of pictures '90000' is written. From the second line to the end, the
 table data has 3 columns. One line corresponds to one picture and we
 have 90000 rows of them. No index or sequential IDs are given.
-The columns are
 
-```{r, eval=F, warning=F}
+```{r, cache=T, warning=F}
 d0 <- read_csv('../input/hashcode-photo-slideshow/d_pet_pictures.txt')
-knitr::kable(str(d0))
-knitr::kable(colnames(d0))
+knitr::kable(head(d0, 3))
 ```
 Taking the first line as an example, 
 
@@ -320,7 +319,7 @@ margin, the computation time is longer.
 ```{r, warning=F, message=F}
 # n <- 128   # preliminary execution
 # n <- 1024
-#n <- 2048  # preliminary
+# n <- 2048  # preliminary
 n <- 90000 # full version
 k1 <- 32  # searching margin for vertial pairing
 k2 <- 128 # searching margin for whole sequence
@@ -386,7 +385,7 @@ of an entry $i$ is sum(a[i,]). The correlation of two entries (or sum
 of the intersect) is sum(a[i,] * b[j,]). The total number of tags in left
 join is sum(a[i,] - b[j,] > 0).
 
-```{r, warning=F, message=F}
+```{r, warning=F, cache=T, message=F}
 #===========================================
 # create a big table  => skip usually
 #--------------------------------------------
@@ -569,7 +568,7 @@ v_pa() below takes a data.frame made of sequence of pictures, and
 return a data.frame with the same format, but the vertical pictures
 are paired in some optimal way. 
 
-```{r, warning=F, message=F}
+```{r, warning=F, message=F, collapse=T}
 #===========================================
 # Pairng vertical pictures. 
 # In return data.fram, vertical pictures are
@@ -720,10 +719,10 @@ v_pa <- function(d3){
     b <- append(b, c(d5a$X0[i], d5bi$X0[j_min], x1_min, sum(aa)+ sum(bb_min)))
 
     # Show progress report # but surpressed for report
-    #    print(paste('i:', i, '/', na, ' paired:', d5a$X0[i], '/', d5bi$X0[j_min], ' | ',
-    #                'j1:', j1, ' nbv:', nbv,' ',format(Sys.time(), "%H:%M:%S"),' | ', 
-    #                sum(aa), '/', sum(bb_min), ' x1_min: ', x1_min, sep=''))
-    #  flush.console()
+       print(paste('i:', i, '/', na, ' paired:', d5a$X0[i], '/', d5bi$X0[j_min], ' | ',
+                    'j1:', j1, ' nbv:', nbv,' ',format(Sys.time(), "%H:%M:%S"),' | ', 
+                    sum(aa), '/', sum(bb_min), ' x1_min: ', x1_min, sep=''))
+         flush.console()
 
     # prepare for the next round
     av0s <- sum(aa)
@@ -778,7 +777,7 @@ v_pa <- function(d3){
 ```
 
 
-```{r, warning=F, message=F}
+```{r, warning=F, message=F, cache=T, collapse=T, results='hide'}
 # Pair
 d3x <- v_pa(d3)
 
@@ -791,7 +790,7 @@ write_csv(d3x, 'b3x.txt')
 The actual ordering of pictures starts here. 
 
 
-```{r, warning=F, message=F}
+```{r, warning=F, message=F, cache=T, collapse=T, results='hide'}
 #===========================================
 # Greedy search
 #-------------------------------------------
@@ -916,12 +915,12 @@ for(ii in 2:nrow(d3xi)){
   
   # Progress report at every 100 trials. 
   # surpressed for report
-  #  if(ii %% 100 == 0){
-  #   print(paste('ii:', ii, '/', nrow(d3xi), ' score:', a_dist, '/', 
-  #                d3xi[ix0,]$X2, ' | ',  s1, '/', s2, ' || ',      
-  #              format(Sys.time(), "%H:%M:%S"), sep=''))
-  #  flush.console()
-  # }
+    if(ii %% 100 == 0){
+     print(paste('ii:', ii, '/', nrow(d3xi), ' score:', a_dist, '/', 
+                  d3xi[ix0,]$X2, ' | ',  s1, '/', s2, ' || ',      
+                format(Sys.time(), "%H:%M:%S"), sep=''))
+    flush.console()
+   }
   
   # Remove the card already taken 
   # from the stack
@@ -941,7 +940,7 @@ for(ii in 2:nrow(d3xi)){
 # from here
 
 write_csv(d4x, 'b4x.txt')
-
+d4x <- read_csv('b4x.txt',col_types=cols(.default = col_integer(), H = col_character()))
 #--------------------------
 sys3 <- Sys.time()
 knitr::kable(sys3 - sys2)
@@ -962,57 +961,8 @@ write_csv(data.frame(c4), 'c4.txt', col_names=F)
 ```
 ### 3. Result
 
-The final score is 427247. This is about the middle of 
-all contestant in the competition. 
-
-```{r, warning=F, message=F}
-#=============================================================
-# The total score
-knitr::kable(s_sc(d4x, total=T),  col.names='Final score')
-
-```
-
-
-The increase of the score as we build the sequence is shown below
-in comparison to the maximum possible scores.
-
-```{r, warning=F, message=F}
-#=============================================================
-# How the score increases
-#-------------------------------------------------------------
-c5 <-  s_sc(d4x, total=F)
-colnames(c5) <- c('i', 'score', 'max_score', 'cum', 'max_cum')
-rownames(c5) <- 1:nrow(c5)
-c5 <- data.frame(c5)
-
-c5 %>% ggplot() + 
-       geom_line(aes(x=i, y=max_cum, color='coral')) + 
-       geom_line(aes(x=i, y=cum, color='darkcyan')) + 
-       xlab('Number of pictures') + ylab('Scores')+   
-       scale_color_discrete(name = "", labels = c("Maximum", "Actual"))
-```
-
-
-
-The spots where the most of the loss happen
-are shown below. The fractional loss becomes 
-larger toward the end. 
-
-
-```{r, warning=F, message=F}
-#=============================================================
-# Take a look at the record where the critical loss happen
-#-------------------------------------------------------------
-
-c5 %>% ggplot(aes(x=i, y=(max_score - score))) + 
-       geom_line(color='coral') + 
-       xlab('Number of pictures') + ylab('Loss')
-
-c5 %>% ggplot(aes(x=i, y=(max_cum-cum)/max_cum)) + 
-       geom_line(color='coral') + 
-       xlab('Number of pictures') + ylab('Fractional loss')  
-```
-```
+The final score is 411493, and thsi is about the middle of the competition 
+rank as of 23 June 2020.
 
 # 4. Summary / Future plan
 

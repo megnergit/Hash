@@ -50,11 +50,11 @@ sys1 <- Sys.time()
 ## ---- warning=F, message=F-------------------------------------------------------------------------------------------------------------------------------------------
 n <- 128   # preliminary execution
 # n <- 1024
-#n <- 2048  # preliminary
-n <- 90000 # full version
+# n <- 2048  # preliminary
+# n <- 8192
+# n <- 90000 # full version
 k1 <- 32  # searching margin for vertial pairing
 k2 <- 128 # searching margin for whole sequence
-
 
 ## ---- warning=F, message=F-------------------------------------------------------------------------------------------------------------------------------------------
 d1 <- read_csv(in_file, skip=1, col_names=F)
@@ -102,7 +102,7 @@ d2 <- as.tibble(d2)
 
 
 ## ---- warning=F, message=F-------------------------------------------------------------------------------------------------------------------------------------------
-write_csv(d2, 'b2.txt', append = F)
+# write_csv(d2, 'b2.txt', append = F)
 #===========================================
 # d2 <- read_csv('b2.txt', col_types=cols(.default = col_integer()))
 d2 <- head(d2, n)
@@ -178,26 +178,26 @@ v_cor <- function(d5a){
   d5o <- d5a[F,]
   for (u in uq){
     # progress report # surpressed for the report
-    # print('')
-    # print(Sys.time())
-    # print(paste('u:', u, sep='')  )
-    # flush.console()
+    print('')
+    print(Sys.time())
+    print(paste('u:', u, sep='')  )
+    flush.console()
     d5i <- d5a %>% filter(X2==u)
     if (nrow(d5i)==1) {
       d5o <- bind_rows(d5o, d5i)
       next
     }
-#    print('transpose...') # progress report # surpresed in report
-#    flush.console()
+    print('transpose...') # progress report # surpresed in report
+    flush.console()
     c1 <- transpose(d5i[,tags])
     colnames(c1) <- d5i$X0
 
-#    print('correlate...')
-#    flush.console()
+    print('correlate...')
+    flush.console()
     c2 <- tcrossprod(data.matrix(c1)) %>% as_cordf() %>% rearrange()
 
-#    print('mutate...')
-#    flush.console()
+    print('mutate...')
+    flush.console()
     c3 <- c2 %>% mutate(XR = rownames(c2)) %>%
       rename(X0=rowname) %>% select(X0, XR) %>%
       mutate(X0=as.integer(as.numeric(X0)), XR=as.integer(as.numeric(XR))) %>%
@@ -400,9 +400,15 @@ v_pa <- function(d3){
 
     # Store peir information in a new column X0V
     d5a[ia,]$X0V <- b[i,2]
-    
+
+    # browser()        
     # Update the number of tags (X2)
     # as the sum of tags in aa and bb
+  
+    if(i %% 100 == 0){
+    print(paste(i, 'cx transpose...,', sep=' ')) # progress report # surpresed in report
+    flush.console()
+    }
     d5a[ia,tags] <- t(cx)
     d5a[ia,]$X2  <- sum(cx)
 
@@ -424,7 +430,7 @@ d3x <- v_pa(d3)
 
 # Store result in a text file
 # so that we can restart teh program from here
-write_csv(d3x, 'b3x.txt')
+# write_csv(d3x, 'b3x.txt')
 
 
 ## ---- warning=F, message=F-------------------------------------------------------------------------------------------------------------------------------------------
@@ -438,7 +444,7 @@ knitr::kable(sys2-sys1)
 #-------------------------------------------
 # In case we resume from the point 
 # that the vertical pairs are created 
-d3x <- read_csv('b3x.txt',col_types=cols(.default = col_integer(), H = col_character()))
+# d3x <- read_csv('b3x.txt',col_types=cols(.default = col_integer(), H = col_character()))
 
 #-------------------------------------------
 # Shuffle horizontal photos and vertical pairs
@@ -548,7 +554,7 @@ for(ii in 2:nrow(d3xi)){
 
   # Set the second card of the transition found this round 
   # as the first card of the next round 
-  ax <- d3xi[ix0,]
+
   ax <- unlist(d3xi[ix0,tags])
   
   # Progress report at every 100 trials. 
@@ -577,7 +583,7 @@ for(ii in 2:nrow(d3xi)){
 # Store the result here, so that we can resume the program 
 # from here
 
-write_csv(d4x, 'b4x.txt')
+# write_csv(d4x, 'b4x.txt')
 
 #--------------------------
 sys3 <- Sys.time()
@@ -592,13 +598,13 @@ for (i in 1:nrow(d4x)){
   c4 <- append(c4, c)
 }
 knitr::kable(head(c4,10))
-write_csv(data.frame(c4), 'c4.txt', col_names=F)
+# write_csv(data.frame(c4), 'c4.txt', col_names=F)
 #=============================================================
 # END
 ##############################################################
 
 
-## ---- warning=F, message=F-------------------------------------------------------------------------------------------------------------------------------------------
+##---- warning=F, message=F-------------------------------------------------------------------------------------------------------------------------------------------
 #=============================================================
 # The total score
 knitr::kable(s_sc(d4x, total=T),  col.names='Final score')
