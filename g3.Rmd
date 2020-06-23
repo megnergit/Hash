@@ -964,6 +964,15 @@ write_csv(data.frame(c4), 'c4.txt', col_names=F)
 The final score is 411493, and thsi is about the middle of the competition 
 rank as of 23 June 2020.
 
+```{r, eval=F}
+d4x <- read_csv('b4x.txt',col_types=cols(.default = col_integer(), H = col_character()))
+sc1 <- s_sc(d4x)
+c5 <-  s_sc(d4x, total=F)
+```
+
+The increase of the score as we build the sequence is shown below
+in comparison to the maximum possible scores.
+
 # 4. Summary / Future plan
 
 The following is what we learned in the project, and the plan 
